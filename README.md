@@ -2,6 +2,10 @@
 
 Smart Python application runner that automatically sets up virtual environments and manages dependencies for seamless deployment.
 
+## ✅ CI/CD Status
+
+All tests passing! Automated publishing workflow ready.
+
 ## What This Does
 
 Creates an **intelligent executable** that:
