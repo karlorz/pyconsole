@@ -4,7 +4,7 @@ Smart Python application runner that automatically sets up virtual environments 
 
 ## ✅ CI/CD Status
 
-All tests passing! Automated publishing workflow ready.
+All tests passing! Automated publishing workflow with semantic-release enabled.
 
 ## What This Does
 
