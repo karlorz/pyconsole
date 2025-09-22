@@ -52,6 +52,8 @@ tag_format = "v{version}"
 version_toml = ["pyproject.toml:project.version"]
 version_source = "tag"
 version_pattern = "^(?P<major>0|[1-9]\\d*)\\.(?P<minor>0|[1-9]\\d*)\\.(?P<patch>0|[1-9]\\d*)(?:-(?P<prerelease>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+(?P<build>metadata))?$"
+# Skip publishing if no changes detected
+allow_no_commits = true
 
 [tool.semantic_release.branches.main]
 match = "(main|master)"
