@@ -1,72 +1,74 @@
-# PyInstaller + uv Auto-Venv Demo
+# PyConsole
 
-A simple Python application that demonstrates how to create executables that automatically set up virtual environments using bundled uv.
+Self-contained Python application that creates portable executables with bundled dependencies and runtime environment setup.
 
-## Features
+## What This Does
 
-- **Single executable** that bundles uv for environment setup
-- **Auto-creates .venv** on first run in the same directory
-- **Installs dependencies** automatically using bundled uv
-- **Perfect for ML libraries** - avoids huge executable sizes
+Creates a **truly portable executable** that:
+
+- Runs on fresh Windows/Linux systems (no Python required)
+- Bundles `uv` package manager inside the executable
+- Auto-creates `.venv` and installs dependencies on first run
+- Perfect for distributing Python apps to non-technical users
 
 ## Quick Start
 
-### Build the executable:
+### Prerequisites
+
+- Python 3.8+
+- uv package manager ([install guide](https://docs.astral.sh/uv/getting-started/installation/))
+
+### Build Portable Executable
+
 ```bash
-python build_simple.py
-```
-
-### Distribute:
-Copy these 3 files to any directory:
-- `app-simple.exe` (the bootstrap executable)
-- `app.py` (your application)
-- `pyproject.toml` (dependencies)
-
-### Run:
-```bash
-./app-simple.exe
-```
-
-**First run**: Creates .venv and installs dependencies (slower)
-**Subsequent runs**: Runs directly from .venv (fast)
-
-## Files
-
-- `app.py` - Main application with urllib3 HTTP example
-- `app_bootstrap.py` - Bootstrap logic that creates .venv
-- `build_simple.py` - Single-command build script
-- `pyproject.toml` - Project configuration and dependencies
-- `requirements.txt` - Pinned dependencies
-- `build.bat` / `build.sh` - Simple uv-based build scripts
-
-## Build Options
-
-### Option 1: Simple build (recommended)
-```bash
-python build_simple.py
-```
-
-### Option 2: Manual build
-```bash
+# Install dependencies
 uv sync
-uv run pyinstaller --onefile --console --add-data "uv.exe;." --add-data "app.py;." --add-data "pyproject.toml;." --name=app-simple app_bootstrap.py
+
+# Build self-contained executable
+python build_exe.py
 ```
 
-### Option 3: Traditional build (no venv creation)
-```bash
-build.bat  # Windows
-./build.sh  # Linux/macOS
+### Deploy Anywhere
+
+Copy these 3 files to any system:
+
+- `pyconsole-portable.exe` (the executable)
+- `app.py` (your application code)
+- `pyproject.toml` (dependency specification)
+
+Run the executable - it handles everything automatically!
+
+## Project Structure
+
+```
+pyconsole/
+├── app.py              # Main application (HTTP demo)
+├── app_bootstrap.py    # Runtime environment setup
+├── build_exe.py        # Build script
+├── test_deployment.py  # Deployment testing
+├── pyproject.toml      # Project config
+└── README.md
 ```
 
 ## How It Works
 
-1. **Build time**: uv is bundled into the executable with PyInstaller
-2. **First run**: Extracts uv, creates .venv, installs dependencies
-3. **Subsequent runs**: Runs app directly from existing .venv
+1. **Build**: PyInstaller bundles `uv` + bootstrap code into single executable
+2. **Deploy**: Copy 3 files to target system
+3. **Run**: Executable extracts `uv`, creates `.venv`, installs deps, runs app
 
-## Perfect For
+## Development
 
-- Machine learning applications (avoid 200MB+ library bundles)
-- Applications that need clean environment isolation
-- Distribution to users without Python installed
-- Teams that want consistent environments across machines
+```bash
+# Run in development
+uv run python app.py
+
+# Test deployment
+python test_deployment.py
+```
+
+## Use Cases
+
+- Distributing Python apps to end users
+- Deployment to systems without Python
+- Corporate environments with restricted installations
+- Demos and prototypes that "just work"

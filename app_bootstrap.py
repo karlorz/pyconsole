@@ -27,6 +27,7 @@ def extract_uv():
 
     if not uv_source.exists():
         print(f"Error: {uv_name} not found in bundled resources")
+        print(f"Looking for: {uv_source}")
         return None
 
     # Create temp directory for extracted uv
@@ -35,13 +36,18 @@ def extract_uv():
 
     uv_dest = temp_dir / uv_name
 
-    # Copy uv executable if not already there
-    if not uv_dest.exists() or uv_source.stat().st_size != uv_dest.stat().st_size:
-        print(f"Extracting {uv_name}...")
-        shutil.copy2(uv_source, uv_dest)
-        # Make executable on Unix
-        if platform.system() != "Windows":
-            uv_dest.chmod(0o755)
+    # Copy uv executable if not already there or if size differs
+    try:
+        if not uv_dest.exists() or uv_source.stat().st_size != uv_dest.stat().st_size:
+            print(f"Extracting {uv_name}...")
+            shutil.copy2(uv_source, uv_dest)
+            # Make executable on Unix
+            if platform.system() != "Windows":
+                uv_dest.chmod(0o755)
+            print(f"✓ Extracted to: {uv_dest}")
+    except Exception as e:
+        print(f"Error extracting uv: {e}")
+        return None
 
     return uv_dest
 
@@ -49,14 +55,22 @@ def run_venv_setup(uv_path):
     """Setup venv and install dependencies"""
     print("Setting up virtual environment...")
 
+    # Ensure pyproject.toml exists
+    if not Path("pyproject.toml").exists():
+        print("Error: pyproject.toml not found in current directory")
+        return False
+
     # Create .venv in current directory
+    print("Creating .venv...")
     result = subprocess.run([
-        str(uv_path), 'venv'
+        str(uv_path), 'venv', '.venv'
     ], capture_output=True, text=True, cwd=os.getcwd())
 
     if result.returncode != 0:
         print(f"Error creating venv: {result.stderr}")
         return False
+
+    print("✓ Virtual environment created")
 
     # Install dependencies
     print("Installing dependencies...")
@@ -68,6 +82,7 @@ def run_venv_setup(uv_path):
         print(f"Error installing dependencies: {result.stderr}")
         return False
 
+    print("✓ Dependencies installed")
     return True
 
 def run_app():
