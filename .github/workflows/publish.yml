@@ -1,0 +1,179 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Test Package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for semantic-release
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Run tests
+      run: |
+        uv run python app.py --dry-run
+
+    - name: Test build
+      run: |
+        uv run python build_exe.py
+
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    permissions:
+      contents: write      # For creating commits and tags
+      pull-requests: write # For creating PRs
+      id-token: write     # For trusted publishing
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0    # Full history for semantic-release
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Run semantic-release
+      run: |
+        uv run semantic-release publish
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: semantic-release
+    if: always() && needs.semantic-release.result == 'success'
+
+    permissions:
+      id-token: write     # Required for trusted publishing
+      contents: read     # For reading repository contents
+
+    environment: pypi
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0    # Get all tags for version detection
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Install build dependencies
+      run: |
+        uv sync --dev
+
+    - name: Build package
+      run: |
+        uv run python -m build
+
+    - name: Check distribution
+      run: |
+        ls -la dist/
+
+    - name: Publish to PyPI with uv
+      run: |
+        uv publish
+      env:
+        UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
+
+    - name: Upload to GitHub Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: dist/*
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-executable:
+    name: Build Portable Executable
+    runs-on: ${{ matrix.os }}
+    needs: test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Build executable
+      run: |
+        uv run python build_exe.py
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: portable-executable-${{ matrix.os }}
+        path: dist/
+        retention-days: 30

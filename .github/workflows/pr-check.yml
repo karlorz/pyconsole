@@ -1,0 +1,129 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Check code style
+      run: |
+        uv run python -m pip install ruff
+        uv run ruff check .
+
+    - name: Check import sorting
+      run: |
+        uv run ruff check --select I .
+
+  test:
+    name: Test Changes
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Run application test
+      run: |
+        uv run python app.py --dry-run
+
+    - name: Test build process
+      run: |
+        uv run python build_exe.py
+
+  validate-config:
+    name: Validate Configuration
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Validate pyproject.toml
+      run: |
+        uv run python -c "
+        import tomllib
+        with open('pyproject.toml', 'rb') as f:
+            config = tomllib.load(f)
+
+        # Check required fields
+        required = ['project', 'project.name', 'project.version', 'project.dependencies']
+        for field in required:
+            keys = field.split('.')
+            current = config
+            for key in keys:
+                if key not in current:
+                    raise ValueError(f'Missing required field: {field}')
+                current = current[key]
+
+        print('✅ pyproject.toml validation passed')
+        "
+
+    - name: Check semantic-release config
+      run: |
+        uv run python -c "
+        import tomllib
+        with open('pyproject.toml', 'rb') as f:
+            config = tomllib.load(f)
+
+        if 'semantic_release' not in config.get('tool', {}):
+            raise ValueError('Missing semantic-release configuration')
+
+        sr_config = config['tool']['semantic_release']
+        required_keys = ['version_toml', 'tag_format', 'commit_parser']
+        for key in required_keys:
+            if key not in sr_config:
+                raise ValueError(f'Missing semantic-release key: {key}')
+
+        print('✅ semantic-release configuration validation passed')
+        "
