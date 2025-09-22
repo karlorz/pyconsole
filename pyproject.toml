@@ -1,6 +1,6 @@
 [project]
 name = "pyconsole-portable"
-version = "0.1.0"
+version = "0.1.1"
 description = "Self-contained Python app with urllib3 HTTP requests"
 readme = "README.md"
 requires-python = ">=3.8"
