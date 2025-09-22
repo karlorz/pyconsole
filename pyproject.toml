@@ -1,5 +1,5 @@
 [project]
-name = "pyconsole"
+name = "pyconsole-portable"
 version = "0.1.0"
 description = "Self-contained Python app with urllib3 HTTP requests"
 readme = "README.md"
@@ -26,10 +26,10 @@ license = {text = "MIT"}
 py-modules = ["app"]
 
 [project.urls]
-Homepage = "https://github.com/pyconsole/pyconsole"
-Repository = "https://github.com/pyconsole/pyconsole"
-Documentation = "https://pyconsole.dev/docs"
-Issues = "https://github.com/pyconsole/pyconsole/issues"
+Homepage = "https://github.com/karlorz/pyconsole"
+Repository = "https://github.com/karlorz/pyconsole"
+Documentation = "https://github.com/karlorz/pyconsole#readme"
+Issues = "https://github.com/karlorz/pyconsole/issues"
 
 [tool.uv]
 dev-dependencies = [
