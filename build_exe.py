@@ -3,10 +3,11 @@
 Build truly self-contained executable with all dependencies bundled
 """
 
+import platform
 import subprocess
 import sys
-import platform
 from pathlib import Path
+
 
 def get_version():
     """Get version from pyproject.toml"""

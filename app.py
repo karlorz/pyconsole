@@ -1,10 +1,12 @@
-import sys
+import argparse
+import json
 import os
 import subprocess
-import urllib3
-import json
-import argparse
+import sys
 from pathlib import Path
+
+import urllib3
+
 
 # Configure console output for Windows compatibility
 def setup_console():
