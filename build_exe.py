@@ -63,14 +63,14 @@ def main():
 
     if exe_path.exists():
         size_mb = exe_path.stat().st_size / (1024 * 1024)
-        print(f"\n+ SUCCESS! Self-contained executable built")
+        print("\n+ SUCCESS! Self-contained executable built")
         print(f"  Location: {exe_path}")
         print(f"  Size: {size_mb:.1f} MB")
         print(f"  Version: {version}")
-        print(f"\n[DEPLOY] Deployment Instructions:")
+        print("\n[DEPLOY] Deployment Instructions:")
         print(f"  1. Copy ONLY {exe_name} to target system")
         print(f"  2. Run {exe_name} - no other files needed!")
-        print(f"\n[GLOBAL] Works on fresh Windows/Linux without Python installed!")
+        print("\n[GLOBAL] Works on fresh Windows/Linux without Python installed!")
 
         # Also create a version-less symlink/copy for convenience
         simple_name = "pyconsole-portable.exe" if platform.system() == "Windows" else "pyconsole-portable"
