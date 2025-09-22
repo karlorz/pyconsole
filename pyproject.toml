@@ -1,7 +1,17 @@
 [project]
 name = "pyconsole"
 version = "0.1.0"
-description = "Add your description here"
+description = "PyInstaller demo app with urllib3 HTTP requests"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "urllib3>=2.0.0"
+]
+
+[project.optional-dependencies]
+build = ["pyinstaller==6.10.0"]
+
+[tool.uv]
+dev-dependencies = [
+    "pyinstaller==6.10.0"
+]

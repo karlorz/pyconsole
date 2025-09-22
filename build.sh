@@ -1,13 +1,21 @@
 #!/bin/bash
-echo "Building PyInstaller console app..."
+echo "========================================"
+echo "PyInstaller Build Script with uv"
+echo "========================================"
 
-# Install dependencies
-echo "Installing dependencies..."
-pip install -r requirements.txt
+# Check if uv is installed
+if ! command -v uv &> /dev/null; then
+    echo "Error: uv is not installed. Please install uv first:"
+    echo "pip install uv"
+    exit 1
+fi
 
-# Build console app (one-file)
-echo "Building one-file console app..."
-pyinstaller --onefile --windowed --name=pyconsole main.py
+echo "Syncing dependencies with uv..."
+uv sync
 
+echo "Building console app with uv..."
+uv run pyinstaller --onefile --console --name=pyconsole-console main.py
+
+echo ""
 echo "Build complete!"
-echo "Executable location: dist/pyconsole"
+echo "Executable location: dist/pyconsole-console"
