@@ -172,7 +172,7 @@ jobs:
         uv run python build_exe.py
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: portable-executable-${{ matrix.os }}
         path: dist/
