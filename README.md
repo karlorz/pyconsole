@@ -1,4 +1,4 @@
-# PyConsole
+# PyConsole Portable
 
 Smart Python application runner that automatically sets up virtual environments and manages dependencies for seamless deployment.
 
