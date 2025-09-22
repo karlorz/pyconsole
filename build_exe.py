@@ -33,9 +33,9 @@ def main():
     print("\n1. Installing dependencies...")
     try:
         subprocess.run(["uv", "sync"], check=True)
-        print("✓ Dependencies installed")
+        print("[OK] Dependencies installed")
     except subprocess.CalledProcessError as e:
-        print(f"✗ Failed to install dependencies: {e}")
+        print(f"[FAIL] Failed to install dependencies: {e}")
         sys.exit(1)
 
     # Build self-contained executable with PyInstaller
@@ -52,9 +52,9 @@ def main():
             "app.py"  # Build app.py directly
         ]
         subprocess.run(cmd, check=True)
-        print(f"✓ Executable built: {exe_name}")
+        print(f"[OK] Executable built: {exe_name}")
     except subprocess.CalledProcessError as e:
-        print(f"✗ Build failed: {e}")
+        print(f"[FAIL] Build failed: {e}")
         sys.exit(1)
 
     # Show results
@@ -63,14 +63,14 @@ def main():
 
     if exe_path.exists():
         size_mb = exe_path.stat().st_size / (1024 * 1024)
-        print(f"\n✓ SUCCESS! Self-contained executable built")
+        print(f"\n+ SUCCESS! Self-contained executable built")
         print(f"  Location: {exe_path}")
         print(f"  Size: {size_mb:.1f} MB")
         print(f"  Version: {version}")
-        print(f"\n📦 Deployment Instructions:")
+        print(f"\n[DEPLOY] Deployment Instructions:")
         print(f"  1. Copy ONLY {exe_name} to target system")
         print(f"  2. Run {exe_name} - no other files needed!")
-        print(f"\n🌍 Works on fresh Windows/Linux without Python installed!")
+        print(f"\n[GLOBAL] Works on fresh Windows/Linux without Python installed!")
 
         # Also create a version-less symlink/copy for convenience
         simple_name = "pyconsole-portable.exe" if platform.system() == "Windows" else "pyconsole-portable"
@@ -90,9 +90,9 @@ def main():
 
             print(f"  Also created: {simple_path}")
         except OSError:
-            print(f"  ⚠️ Could not create {simple_path}")
+            print(f"  ! Could not create {simple_path}")
     else:
-        print("✗ Executable not found")
+        print("[FAIL] Executable not found")
         sys.exit(1)
 
 if __name__ == "__main__":
