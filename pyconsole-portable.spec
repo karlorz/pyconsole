@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['app_bootstrap.py'],
+    ['app.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:\\Users\\user\\.local\\bin\\uv.exe', '.'), ('app.py', '.'), ('pyproject.toml', '.')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
