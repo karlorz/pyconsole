@@ -29,8 +29,8 @@ Repository = "https://github.com/pyconsole/pyconsole"
 Documentation = "https://pyconsole.dev/docs"
 Issues = "https://github.com/pyconsole/pyconsole/issues"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pyinstaller>=6.0.0",
     "python-semantic-release>=9.0.0"
 ]

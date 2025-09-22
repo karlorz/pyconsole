@@ -295,6 +295,7 @@ def publish_package(dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(description="PyConsole - Self-contained Python application")
+    parser.add_argument("--test", action="store_true", help="Run in test mode (no interactive prompts)")
     parser.add_argument("--publish", action="store_true", help="Publish package to PyPI")
     parser.add_argument("--dry-run", action="store_true", help="Dry run publish without uploading")
     args = parser.parse_args()
@@ -339,12 +340,14 @@ def main():
     except Exception as e:
         safe_print(f"❌ Error making HTTP request: {e}")
 
-    safe_print("\n💡 Press Enter to exit...")
-    try:
-        input()  # Keep console window open until user presses Enter
-    except EOFError:
-        # Handle non-interactive environments
-        pass
+    # Only show interactive prompt in non-test mode
+    if not args.test:
+        safe_print("\n💡 Press Enter to exit...")
+        try:
+            input()  # Keep console window open until user presses Enter
+        except EOFError:
+            # Handle non-interactive environments
+            pass
 
 
 if __name__ == "__main__":
