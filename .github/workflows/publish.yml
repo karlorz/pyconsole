@@ -82,6 +82,7 @@ jobs:
     - name: Run semantic-release
       id: release
       run: |
+        uv run semantic-release version
         uv run semantic-release publish
         echo "has_release=$(git tag --points-at HEAD | wc -l)" >> $GITHUB_OUTPUT
       env:
