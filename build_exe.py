@@ -27,6 +27,7 @@ def main():
             "uv", "run", "pyinstaller",
             "--onefile",
             "--console",
+            "--add-data=pyproject.toml:.",  # Bundle pyproject.toml for auto-venv
             "--name=pyconsole-portable",
             "app.py"  # Build app.py directly
         ]
